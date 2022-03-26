@@ -1,0 +1,85 @@
+class Main{
+
+// Draw our board and accessory material
+function void drawBoard()
+{
+	// draw effectively 9 tiles
+	do Screen.setColor(true);
+
+	// vertical lines
+	do Screen.drawLine(85, 1, 85, 254);
+	do Screen.drawLine(2*85, 1, 2*85, 254);
+
+	// horizontal lines
+	do Screen.drawLine(1, 85, 254, 85);
+	do Screen.drawLine(1, 2*85, 254, 2*85);
+	do Screen.drawRectangle(256, 0, 511, 255);
+	return;
+}
+
+function void drawX()
+{
+	// do they do diag lines ?
+	do Screen.setColor(true);
+	// this one gonna be trickier
+	return;
+}
+
+function bool isDiag(Array a)
+{
+	if(a[0] = a[4] = a[8]){
+		return true;
+	}
+	if(a[2] = a[4] = a[6]){
+		return true;
+	}
+	return false;
+}
+
+function bool isHorz(Array a)
+{
+	if(a[0] = a[1] = a[2]){
+		return true;
+	}
+	if(a[3] = a[4] = a[5]){
+		return true;
+	}
+	if(a[6] = a[7] = a[8]){
+		return true;
+	}
+	return false;
+}
+
+function bool isVert(Array a)
+{
+	if(a[0] = a[3] = a[6]){
+		return true;
+	}
+	if(a[1] = a[4] = a[7]){
+		return true;
+	}
+	if(a[2] = a[5] = a[8]){
+		return true;
+	}
+	return false;
+}
+
+function void main()
+{
+	var Array tiles;
+	var int score;
+	var bool finished;
+	let score = 0;
+	let finished = false;
+
+	do Main.drawBoard();
+
+	while(finished){
+		if( Main.isDiag(tiles) | Main.isHorz(tiles) | Main.isVert(tiles)){
+			let finished = true;
+		}
+	}
+	return;
+}
+
+}
