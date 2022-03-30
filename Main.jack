@@ -1,36 +1,88 @@
 class Main{
 
+static Array tiles;
+static int scoreP1, scoreP2, tile, currPlayer, i;
+static bool finished, reset;
+
+/*
+ * Arbitrary drawing functions
+ */
+
 // Draw our board and accessory material
-function void drawBoard()
+function void drawTicTac()
 {
-	// draw effectively 9 tiles
+	var int i, j, k;
+	let i = 49; // Ascii "1"
+	let j = 0;
+
 	do Screen.setColor(true);
 
 	// vertical lines
 	do Screen.drawLine(85, 1, 85, 254);
-	do Screen.drawLine(2*85, 1, 2*85, 254);
+	do Screen.drawLine(2*87, 1, 2*87, 254);
 
 	// horizontal lines
 	do Screen.drawLine(1, 85, 254, 85);
-	do Screen.drawLine(1, 2*85, 254, 2*85);
+	do Screen.drawLine(1, 2*87, 254, 2*87);
+
+	// number boxes 1-9
+	while(~(i = 58)){
+		let k = 0;
+		while(~(k > 22)){
+			do Output.moveCursor(j, k);
+			do Output.printChar(i);
+			let i=i+1;
+			let k=k+11;
+		}
+		let j=j+8;
+	}
+	return;
+}
+function void drawBoard()
+{
+	do Main.drawTicTac();
+	// game stats
 	do Screen.drawRectangle(256, 0, 511, 255);
 	return;
 }
 
-function void drawX()
+function void drawX(int x, int y)
 {
-	// do they do diag lines ?
-	do Screen.setColor(true);
-	// this one gonna be trickier
+	do Screen.drawLine(x-40, y+40, x+40, y-40);
+	do Screen.drawLine(x-40, y-40, x+40, y+40);
 	return;
 }
 
+// These two find the center of the entered tile
+function int getAbcissa(int n)
+{
+	if((n=1) | (n=4) | (n=7)){
+		return 42;
+	}
+	if((n=2) | (n=5) | (n=8)){
+		return 129;
+	}
+	return 214;
+}
+
+function int getOrdinate(int n)
+{
+	if((n=1) | (n=2) | (n=3)){
+		return 42;
+	}
+	if((n=4) | (n=5) | (n=6)){
+		return 129;
+	}
+	return 214;
+}
+
+/*
+ * Winner testing
+ */
 function bool isDiag(Array a)
 {
-	if(a[0] = a[4] = a[8]){
-		return true;
-	}
-	if(a[2] = a[4] = a[6]){
+	if(((a[0] = a[4]) & (a[4] = a[8])) |
+	   ((a[2] = a[4]) & (a[4] = a[6]))){
 		return true;
 	}
 	return false;
@@ -38,13 +90,9 @@ function bool isDiag(Array a)
 
 function bool isHorz(Array a)
 {
-	if(a[0] = a[1] = a[2]){
-		return true;
-	}
-	if(a[3] = a[4] = a[5]){
-		return true;
-	}
-	if(a[6] = a[7] = a[8]){
+	if(((a[0] = a[1]) & (a[1] = a[2])) | 
+	   ((a[3] = a[4]) & (a[4] = a[5])) |
+	   ((a[6] = a[7]) & (a[7] = a[8]))){
 		return true;
 	}
 	return false;
@@ -52,34 +100,69 @@ function bool isHorz(Array a)
 
 function bool isVert(Array a)
 {
-	if(a[0] = a[3] = a[6]){
-		return true;
-	}
-	if(a[1] = a[4] = a[7]){
-		return true;
-	}
-	if(a[2] = a[5] = a[8]){
+	if(((a[0] = a[3]) & (a[3] = a[6])) | 
+	   ((a[1] = a[4]) & (a[4] = a[7])) |
+	   ((a[2] = a[5]) & (a[5] = a[8]))){
 		return true;
 	}
 	return false;
 }
 
-function void main()
+function void init()
 {
-	var Array tiles;
-	var int score;
-	var bool finished;
-	let score = 0;
+	let tiles = Array.new(9);
+	let scoreP1 = 0;
+	let scoreP2 = 0;
+	let currPlayer = 1;
 	let finished = false;
 
 	do Main.drawBoard();
-
-	while(finished){
-		if( Main.isDiag(tiles) | Main.isHorz(tiles) | Main.isVert(tiles)){
-			let finished = true;
-		}
+	do Output.moveCursor(22, 63); // Bottom right corner
+	
+	let i = 2;
+	while(i < 11){
+		let tiles[i] = i;
+		let i = i + 1;
 	}
 	return;
 }
 
+function void main()
+{
+	do Main.init();
+
+	while(~(finished)){
+		let tile = Keyboard.readChar();
+		while(tiles[tile] 
+		do Output.moveCursor(22, 63);
+		if(tile = 82 | tile = 114)
+			do Main.init(); 
+		else{
+		let tile = tile - 48;
+		}
+		if(currPlayer = 1){
+			let tiles[tile-1] = 1;
+			do Main.drawX(Main.getAbcissa(tile), Main.getOrdinate(tile));
+			let currPlayer = 2;
+		}
+		else{
+			let tiles[tile-1] = 2;
+			do Screen.drawCircle(Main.getAbcissa(tile), Main.getOrdinate(tile), 40);
+			let currPlayer = 1;
+		}
+		if(Main.isVert(tiles) | Main.isHorz(tiles) | Main.isDiag(tiles)){
+			let finished = true;
+			if(currPlayer = 1){
+				let scoreP1 = scoreP1 + 1;
+				let currPlayer = 2;
+			}
+			else{
+				let scoreP2 = scoreP2 + 1;
+				let currPlayer = 1;
+			}
+			do Screen.clearScreen();
+		}
+	}
+	return;
+}
 }
