@@ -121,10 +121,16 @@ function void init()
 	do Main.drawBoard();
 	do Output.moveCursor(22, 63); // Bottom right corner
 	
+<<<<<<< HEAD
+	let i = 3;
+	while(i < 11){
+		let tiles[i-3] = i;
+=======
 	// reduce collisions with our entered 1 and 2 variables
 	let i = 0;
 	while(i < 11){
 		let tiles[i] = i+3;
+>>>>>>> 766f1f546394ef9edd46a11aa360b244a986a7da
 		let i = i + 1;
 	}
 	return;
@@ -153,6 +159,15 @@ function void main()
 		 */
 		let tile = Keyboard.readChar();
 		do Output.moveCursor(22, 63);
+<<<<<<< HEAD
+		if((tile = 82) | (tile = 114)){
+			do Screen.clearScreen();
+			do Main.init(); 
+        }
+        if((tile = 81) | (tile = 113)){
+            let finished = true;
+        }
+=======
 		while((tiles[tile-49] = 1) | (tiles[tile-49] = 2)){
 			let tile = Keyboard.readChar();
 			do Output.moveCursor(22, 63);
@@ -161,6 +176,7 @@ function void main()
 		if(tile = 82 | tile = 114){
 			do Main.init();		// reset (r or R)
 		}
+>>>>>>> 766f1f546394ef9edd46a11aa360b244a986a7da
 		else{
 			let tile = tile - 48;	// adjust tile
 		}
@@ -177,7 +193,7 @@ function void main()
 		}
 
 		if(Main.isVert(tiles) | Main.isHorz(tiles) | Main.isDiag(tiles)){
-			let finished = true;
+			do Main.init();
 			if(currPlayer = 1){
 				let scoreP1 = scoreP1 + 1;
 				let currPlayer = 2;
@@ -186,9 +202,10 @@ function void main()
 				let scoreP2 = scoreP2 + 1;
 				let currPlayer = 1;
 			}
-			do Screen.clearScreen();
+		
 		}
 	}
+	do Screen.clearScreen();
 	return;
 }
 }
