@@ -153,43 +153,35 @@ function void main()
 	do Main.init();
 
 	while(~(finished)){
-
 		/* we have to moveCursor so much because for whatever reason we HAVE to print
 		 * to the screen when reading a keyboard character. no getchar(); (snack car)
 		 */
 		let tile = Keyboard.readChar();
 		do Output.moveCursor(22, 63);
-<<<<<<< HEAD
-		if((tile = 82) | (tile = 114)){
+
+		if((tile = 82) | (tile = 114)){		// reset
 			do Screen.clearScreen();
 			do Main.init(); 
-        }
-        if((tile = 81) | (tile = 113)){
-            let finished = true;
-        }
-=======
+        	}
+        	if((tile = 81) | (tile = 113)){		// quit
+            		let finished = true;
+        	}
+		else{
+			let tile = tile - 48;	// adjust tile
+		}
+
 		while((tiles[tile-49] = 1) | (tiles[tile-49] = 2)){
 			let tile = Keyboard.readChar();
 			do Output.moveCursor(22, 63);
 		}
 
-		if(tile = 82 | tile = 114){
-			do Main.init();		// reset (r or R)
-		}
->>>>>>> 766f1f546394ef9edd46a11aa360b244a986a7da
-		else{
-			let tile = tile - 48;	// adjust tile
-		}
-
 		if(currPlayer = 1){
 			let tiles[tile-1] = 1;
 			do Main.drawX(Main.getAbcissa(tile), Main.getOrdinate(tile));
-			let currPlayer = 2;
 		}
 		else{
 			let tiles[tile-1] = 2;
 			do Screen.drawCircle(Main.getAbcissa(tile), Main.getOrdinate(tile), 40);
-			let currPlayer = 1;
 		}
 
 		if(Main.isVert(tiles) | Main.isHorz(tiles) | Main.isDiag(tiles)){
