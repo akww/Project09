@@ -1,17 +1,16 @@
 class Main{
 
 static Array tiles;
-static int scoreP1, scoreP2, tile, currPlayer, i;
+static int scoreP1, scoreP2, tile, currPlayer, i, tilecount;
 static bool finished, reset;
 
 /*
  * Arbitrary drawing functions
  */
-
 // Draw our board and accessory material
 function void drawTicTac()
 {
-	var int i, j, k;
+	var int j, k;
 	let i = 49; // Ascii "1"
 	let j = 0;
 
@@ -38,9 +37,11 @@ function void drawTicTac()
 	}
 	return;
 }
+
 function void drawBoard()
 {
 	do Main.drawTicTac();
+
 	// game stats
 	do Screen.drawRectangle(256, 0, 511, 255);
 	return;
@@ -113,18 +114,32 @@ function void init()
 	let tiles = Array.new(9);
 	let scoreP1 = 0;
 	let scoreP2 = 0;
+	let tilecount = 0;
 	let currPlayer = 1;
 	let finished = false;
 
 	do Main.drawBoard();
 	do Output.moveCursor(22, 63); // Bottom right corner
 	
-	let i = 2;
+	// reduce collisions with our entered 1 and 2 variables
+	let i = 0;
 	while(i < 11){
-		let tiles[i] = i;
+		let tiles[i] = i+3;
 		let i = i + 1;
 	}
 	return;
+}
+
+function bool isDigitp1(int n)
+{
+	if((n = 1) | (n = 2) | (n = 3) |
+	   (n = 4) | (n = 5) | (n = 6) |
+	   (n = 7) | (n = 8) | (n = 9)){
+		return true;
+	}
+	else{
+		return false;
+	}
 }
 
 function void main()
@@ -132,14 +147,24 @@ function void main()
 	do Main.init();
 
 	while(~(finished)){
+
+		/* we have to moveCursor so much because for whatever reason we HAVE to print
+		 * to the screen when reading a keyboard character. no getchar(); (snack car)
+		 */
 		let tile = Keyboard.readChar();
-		while(tiles[tile] 
 		do Output.moveCursor(22, 63);
-		if(tile = 82 | tile = 114)
-			do Main.init(); 
-		else{
-		let tile = tile - 48;
+		while((tiles[tile-49] = 1) | (tiles[tile-49] = 2)){
+			let tile = Keyboard.readChar();
+			do Output.moveCursor(22, 63);
 		}
+
+		if(tile = 82 | tile = 114){
+			do Main.init();		// reset (r or R)
+		}
+		else{
+			let tile = tile - 48;	// adjust tile
+		}
+
 		if(currPlayer = 1){
 			let tiles[tile-1] = 1;
 			do Main.drawX(Main.getAbcissa(tile), Main.getOrdinate(tile));
@@ -150,6 +175,7 @@ function void main()
 			do Screen.drawCircle(Main.getAbcissa(tile), Main.getOrdinate(tile), 40);
 			let currPlayer = 1;
 		}
+
 		if(Main.isVert(tiles) | Main.isHorz(tiles) | Main.isDiag(tiles)){
 			let finished = true;
 			if(currPlayer = 1){
