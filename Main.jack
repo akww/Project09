@@ -2,7 +2,7 @@ class Main{
 
 static Array tiles;
 static int scoreP1, scoreP2, tile, currPlayer, i, tilecount;
-static bool finished, reset;
+static bool finished, reset, flag;
 
 /*
  * Arbitrary drawing functions
@@ -24,6 +24,7 @@ function void drawTicTac()
 	// horizontal lines
 	do Screen.drawLine(1, 85, 254, 85);
 	do Screen.drawLine(1, 2*87, 254, 2*87);
+	
 
 	// number boxes 1-9
 	while(~(i = 58)){
@@ -45,13 +46,35 @@ function void drawBoard()
 
 	// game stats
 	do Screen.drawRectangle(256, 0, 511, 255);
-	return;
+	
+	// player 1
+    do Output.moveCursor(1,33);
+    do Output.printString("Player 1 (X): ");
+    do Output.printInt(scoreP1);
+    
+    // player 2
+    do Output.moveCursor(2,33);
+    do Output.printString("Player 2 (O): ");
+    do Output.printInt(scoreP2);
+	
+	// Current Player
+	do Output.moveCursor(4, 33);
+	do Output.printString("Current Player: ");
+	do Output.printInt(currPlayer);
+	
+	// Controls
+	do Output.moveCursor(22, 33);
+	do Output.printString("Controls: (q)uit and (r)eset");
+    do Output.moveCursor(22, 63);
+    return;
 }
 
 function void drawX(int x, int y)
 {
 	do Screen.drawLine(x-40, y+40, x+40, y-40);
 	do Screen.drawLine(x-40, y-40, x+40, y+40);
+	do Screen.drawLine(x-39, y+39, x+39, y-39);
+    do Screen.drawLine(x-39, y-39, x+39, y+39);
 	return;
 }
 
@@ -110,27 +133,6 @@ function bool isVert(Array a)
 	return false;
 }
 
-function void init()
-{
-	let tiles = Array.new(9);
-	let scoreP1 = 0;
-	let scoreP2 = 0;
-	let tilecount = 0;
-	let currPlayer = 1;
-	let finished = false;
-
-	do Main.drawBoard();
-	do Output.moveCursor(22, 63); // Bottom right corner
-	
-	// reduce collisions with our entered 1 and 2 variables
-	let i = 0;
-	while(i < 9){
-		let tiles[i] = i+3;
-		let i = i + 1;
-	}
-	return;
-}
-
 function bool isDigit(int n)
 {
 	if((n = 1) | (n = 2) | (n = 3) |
@@ -143,8 +145,32 @@ function bool isDigit(int n)
 	}
 }
 
+
+function void init()
+{
+	let tiles = Array.new(9);
+	let tilecount = 0;
+	let currPlayer = 1;
+	let finished = false;
+
+ 	do Screen.clearScreen();
+	do Main.drawBoard();
+	do Output.moveCursor(22, 63); // Bottom right corner
+	
+	// reduce collisions with our entered 1 and 2 variables
+	let i = 0;
+	while(i < 9){
+		let tiles[i] = i+3;
+		let i = i + 1;
+	}
+	return;
+}
+
 function void main()
 {
+	let scoreP1 = 0;
+	let scoreP2 = 0;
+	
 	do Main.init();
 
 	while(~(finished)){
@@ -152,46 +178,64 @@ function void main()
 		 * to the screen when reading a keyboard character. no getchar(); (snack car)
 		 */
 		let tile = Keyboard.readChar();
-		do Output.moveCursor(22, 63);
-
-		if((tile = 82) | (tile = 114)){		// reset
-			do Screen.clearScreen();
-			do Main.init(); 
-        }
-        if((tile = 81) | (tile = 113)){		// quit
-           	let finished = true;
-        }
-    	else{
-    		let tile = tile - 48;	// adjust tile
-        }
+    	do Output.moveCursor(22, 63);
+        let flag = true;
 
         if(Main.isDigit(tile-48)){
-    		while((tiles[tile-49] = 1) | (tiles[tile-49] = 2)){
-    			let tile = Keyboard.readChar();
-    			do Output.moveCursor(22, 63);
-    		}
+            if((tiles[tile-49] = 1) | (tiles[tile-49] = 2)){
+                let flag = false;
+            }
+            else{
+                let tile = tile - 48;
+                if(currPlayer = 1){
+                    let tiles[tile-1] = 1;
+                    let currPlayer = 2;
+                    do Main.drawX(Main.getAbcissa(tile), Main.getOrdinate(tile));
+          		}
+          		else{
+          			let tiles[tile-1] = 2;
+              		let currPlayer = 1;
+          			do Screen.drawCircle(Main.getAbcissa(tile), Main.getOrdinate(tile), 40);
+          			do Screen.setColor(0);
+                    do Screen.drawCircle(Main.getAbcissa(tile), Main.getOrdinate(tile), 38);
+                    do Screen.setColor(1);
+          		}
+  		        let tilecount = tilecount + 1;
+  		        do Output.moveCursor(4, 33);
+              	do Output.printString("Current Player: ");
+              	do Output.printInt(currPlayer);
+              	do Output.moveCursor(22, 63);   
+  		        
+            }       
         }
         
-		if(currPlayer = 1){
-			let tiles[tile-1] = 1;
-			do Main.drawX(Main.getAbcissa(tile), Main.getOrdinate(tile));
-		}
-		else{
-			let tiles[tile-1] = 2;
-			do Screen.drawCircle(Main.getAbcissa(tile), Main.getOrdinate(tile), 40);
-		}
+        if(tilecount = 9){
+            let tile = 114;
+        }
+
+        if(~(Main.isDigit(tile-48)) & flag){
+      		if((tile = 82) | (tile = 114)){		// reset
+         	let scoreP1 = 0;
+            let scoreP2 = 0;
+          	do Main.init();
+      		
+            }
+            if((tile = 81) | (tile = 113)){		// quit
+              	let finished = true;
+            }
+            else{
+                let flag = false;
+            }
+        }
 
 		if(Main.isVert(tiles) | Main.isHorz(tiles) | Main.isDiag(tiles)){
-			do Main.init();
-			if(currPlayer = 1){
+			if(currPlayer = 2){
 				let scoreP1 = scoreP1 + 1;
-				let currPlayer = 2;
 			}
 			else{
 				let scoreP2 = scoreP2 + 1;
-				let currPlayer = 1;
 			}
-		
+			do Main.init();
 		}
 	}
 	do Screen.clearScreen();
