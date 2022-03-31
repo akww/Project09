@@ -14,6 +14,7 @@ function void drawTicTac()
 	let i = 49; // Ascii "1"
 	let j = 0;
 
+	// set color to black for drawing
 	do Screen.setColor(true);
 
 	// vertical lines
@@ -121,16 +122,10 @@ function void init()
 	do Main.drawBoard();
 	do Output.moveCursor(22, 63); // Bottom right corner
 	
-<<<<<<< HEAD
-	let i = 3;
-	while(i < 11){
-		let tiles[i-3] = i;
-=======
 	// reduce collisions with our entered 1 and 2 variables
 	let i = 0;
 	while(i < 11){
 		let tiles[i] = i+3;
->>>>>>> 766f1f546394ef9edd46a11aa360b244a986a7da
 		let i = i + 1;
 	}
 	return;
