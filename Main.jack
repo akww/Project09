@@ -124,7 +124,7 @@ function void init()
 	
 	// reduce collisions with our entered 1 and 2 variables
 	let i = 0;
-	while(i < 11){
+	while(i < 9){
 		let tiles[i] = i+3;
 		let i = i + 1;
 	}
